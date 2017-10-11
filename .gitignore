@@ -1,2 +1,2 @@
-provisioners/tmp/*
+packages/*
 *.log
