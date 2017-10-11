@@ -1,2 +1,4 @@
 # Vagrant
-It's a thing and it's useful.  This is playing with it to set up java and nifi.
+It's a thing and it's useful.
+
+This is a scratch pad for me to learn vagrant.
