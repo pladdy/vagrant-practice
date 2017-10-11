@@ -7,6 +7,7 @@
 # you're doing.
 Vagrant.configure("2") do |config|
   # avoid 'Innapropriate ioctl for device' messages
+  # see vagrant config doc for more info: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
   config.vm.box = "ubuntu/xenial64"
 
