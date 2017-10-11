@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-
-# also put on the VM but run after provisioning
+#!/usr/bin/bash
 
 TMP_ROOT=/vagrant/packages
 GO_PKG=go1.8.1.linux-amd64.tar.gz

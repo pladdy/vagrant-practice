@@ -6,33 +6,45 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
+  # avoid 'Innapropriate ioctl for device' messages
+  config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
   config.vm.box = "ubuntu/xenial64"
 
-  # I tried using this to move over some big files and it was painfully slow.
-  # doing it via the vagrant-scp plugin instead
+  # I tried using provision file to move over some big files and it was painfully slow.
+  # do it via the vagrant-scp plugin instead or just sync a dir
   # Dir.glob('./provision/*').each do |file|
   #   config.vm.provision "file", source: file, destination: "/tmp"
   # end
-  #
-  # having a synced folder is a bit dangerous because if a file is rm'd it's
-  # gone :(
-  # config.vm.synced_folder "provision/", "/provision", create: true
 
+  # example using a script
   config.vm.provision "bootstrap", type: "shell" do |s|
     s.path = "./provisioners/bootstrap.sh"
   end
 
-  # i tried setting run: "never" but it still provisions each time i run
-  # provisioner.  decided to name each provisioner and call explicitly
-  config.vm.provision "poststrap", type: "shell" do |s|
-    s.path = "./provisioners/poststrap.sh"
+  # example doing an inline set of commands
+  config.vm.provision "adduser", type: "shell" do |s|
+    s.inline = <<-SHELL
+    # set up user
+    USER_TO_MAKE=pladdy
+
+    if id ${USER_TO_MAKE} > /dev/null 2>&1; then
+      echo "User ${USER_TO_MAKE} already exists"
+    else
+      useradd -m ${USER_TO_MAKE} -s /bin/bash
+
+      # if user is new, add go to path
+      if [ $? == 0 ]; then
+        echo "Updating PATH in .bashrc"
+        echo PATH=$PATH:/usr/local/go/bin >> /home/${USER_TO_MAKE}/.bashrc
+      fi
+
+      echo ${USER_TO_MAKE}:${USER_TO_MAKE} | chpasswd
+    fi
+    SHELL
   end
+
+  # different block, similar to above bootstrap
+  config.vm.provision "poststrap", type: "shell", path: "./provisioners/poststrap.sh"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
