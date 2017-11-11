@@ -13,19 +13,22 @@ Vagrant.configure("2") do |config|
 
   # I tried using provision file to move over some big files and it was painfully slow.
   # do it via the vagrant-scp plugin instead or just sync a dir
+  # /vagrant is a dir on the VM that is sync'd with the local directory by default
+  #
+  ## This is slow for big packages
   # Dir.glob('./provision/*').each do |file|
   #   config.vm.provision "file", source: file, destination: "/tmp"
   # end
 
   # example using a script
   config.vm.provision "bootstrap", type: "shell" do |s|
-    s.path = "./vagrant-single/provisioners/bootstrap.sh"
+    s.inline = "apt-get update"
   end
 
   # example doing an inline set of commands
   config.vm.provision "adduser", type: "shell" do |s|
     s.inline = <<-SHELL
-    # set up user
+    # set up user; TODO: puppet :)
     USER_TO_MAKE=pladdy
 
     if id ${USER_TO_MAKE} > /dev/null 2>&1; then
@@ -44,8 +47,7 @@ Vagrant.configure("2") do |config|
     SHELL
   end
 
-  # different block, similar to above bootstrap
-  config.vm.provision "poststrap", type: "shell", path: "./scripts/install-go"
+  config.vm.provision "install-go", type: "shell", path: "./scripts/install-go"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

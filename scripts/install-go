@@ -1,7 +1,23 @@
 #!/usr/bin/env bash
 
 TMP_ROOT=/vagrant/packages
-GO_PKG=go1.8.1.linux-amd64.tar.gz
+SHA256_CHECK_SUM=de874549d9a8d8d8062be05808509c09a88a248e77ec14eb77453530829ac02b
+BASE_URL=https://redirector.gvt1.com/edgedl/go
+GO_PKG=go1.9.2.linux-amd64.tar.gz
 
-echo "Installing golang ${GO_PKG}"
-tar -C /usr/local -xzf ${TMP_ROOT}/${GO_PKG}
+# download package if not already in packages directory
+if [ ! -f ${TMP_ROOT}/${GO_PKG} ]; then
+  echo "Downloading golang ${GO_PKG}..."
+  wget -q ${BASE_URL}/${GO_PKG} -O ${TMP_ROOT}/${GO_PKG}
+fi
+
+# get checksum and compare
+DOWNLOAD_SUM=`sha256sum ${TMP_ROOT}/${GO_PKG} | cut -d ' ' -f 1`
+
+if [ "${SHA256_CHECK_SUM}" = "${DOWNLOAD_SUM}" ]; then
+  echo "Installing golang ${GO_PKG}..."
+  tar -C /usr/local -xzf ${TMP_ROOT}/${GO_PKG}
+else
+  echo "Checksums don't match: Expected: ${SHA256_CHECK_SUM}, Actual: ${DOWNLOAD_SUM}"
+  exit 1
+fi
