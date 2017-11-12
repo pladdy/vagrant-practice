@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
 wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
-deb https://pkg.jenkins.io/debian binary/
+
+# update sources list of source not present
+line_to_add="deb https://pkg.jenkins.io/debian binary/"
+
+if ! grep -q "${line_to_add}" /etc/apt/sources.list; then
+  echo "Updating sources list"
+  sudo echo ${line_to_add} >> /etc/apt/sources.list
+fi
 
 sudo apt-get update
-sudo apt-get install jenkins
+sudo apt-get install -y jenkins

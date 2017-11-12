@@ -1,7 +1,7 @@
 .PHONY: vagrant
 
 all:
-	mkdir packages
+	@if [ ! -d packages ]; then mkdir packages; fi
 
 clean:
 	vagrant destroy -f
