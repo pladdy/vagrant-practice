@@ -12,6 +12,8 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
     v.memory = 2048
   end
+
+  config.vm.synced_folder "../packages/", "/vagrant/packages"
   config.vm.synced_folder "../scripts/", "/vagrant/scripts"
 
   # avoid 'Innapropriate ioctl for device' messages
