@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+USER_TO_MAKE=$1
+
+if id ${USER_TO_MAKE} > /dev/null 2>&1; then
+  echo "User ${USER_TO_MAKE} already exists"
+else
+  useradd -m ${USER_TO_MAKE} -s /bin/bash
+  echo ${USER_TO_MAKE}:${USER_TO_MAKE} | chpasswd
+fi
