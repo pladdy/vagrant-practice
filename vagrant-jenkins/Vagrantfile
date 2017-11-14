@@ -37,6 +37,11 @@ Vagrant.configure("2") do |config|
         v.cpus = 2
         v.memory = 2048
       end
+
+      s.vm.provision "create-user", type: "shell",
+        inline: "sudo /vagrant/scripts/create-user jenkins-slave"
+      s.vm.provision "create-key", type: "shell",
+        inline: "sudo -u jenkins-slave ssh-keygen -f /home/jenkins-slave/.ssh/id_rsa -N ''"
     end
   end
 end

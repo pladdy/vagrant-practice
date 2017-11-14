@@ -10,6 +10,13 @@ clean:
 	rm -f Vagrantfile
 	rm -f *.log
 
+destroy-all:
+	@for type in `echo "$(types)" | sed 's/ /  /g'`; do \
+		echo "Destroying vagrant-$${type}"; \
+		cd vagrant-$${type} && vagrant destroy -f; \
+		cd ../; \
+	done
+
 halt-all:
 	@for type in `echo "$(types)" | sed 's/ /  /g'`; do \
 		echo "Halting vagrant-$${type}"; \
