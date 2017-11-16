@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
         inline: "sudo /vagrant/scripts/create-user #{user}"
 
       s.vm.provision "create-key", type: "shell",
-        inline: "sudo -u #{user} ssh-keygen -f /home/${user}/.ssh/id_rsa -N ''"
+        inline: "sudo -u #{user} ssh-keygen -f /home/#{user}/.ssh/id_rsa -N ''"
     end
   end
 end
