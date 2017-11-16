@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+SLAVE_USER=jenkins-slave
+
+get_ip() {
+  echo $(grep $1 Vagrantfile | cut -d '>' -f 2 | sed 's/"//g')
+}
+
+slave_names() {
+  echo `grep 'slave_."' Vagrantfile | sed 's/=.*//' | sed 's/"//g' | sed 's/ //'`
+}
+
+warn() {
+  echo -e "\033[91m$1\033[0m"
+}
+
+for machine in $(slave_names); do
+  echo Machine: ${machine}
+
+  ip=$(get_ip ${machine})
+  echo IP: ${ip}
+
+  if ping -t 1 ${ip} > /dev/null; then
+    echo Key:
+    echo $(ssh -o 'StrictHostKeyChecking no' ubuntu@${ip} -i .vagrant/machines/${machine}/virtualbox/private_key 'sudo -u ${SLAVE_USER} cat /home/${SLAVE_USER}/.ssh/id_rsa')
+  else
+    warn "IP ${ip} can't be pinged, make sure vagrant is up"
+    echo
+  fi
+done

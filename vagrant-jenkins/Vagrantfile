@@ -1,3 +1,10 @@
+# define dedicated ips for the jenkins machines
+machine_ips = {
+ "jenkins_master" => "192.168.50.2",
+ "jenkins_slave_0" =>"192.168.50.3",
+ "jenkins_slave_1" => "192.168.50.4",
+}
+
 # configure with version "2"
 Vagrant.configure("2") do |config|
   box = "ubuntu/xenial64"
@@ -17,11 +24,11 @@ Vagrant.configure("2") do |config|
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
   # create master node
-  config.vm.define "jenkins-master" do |n|
+  config.vm.define "jenkins_master" do |n|
     n.vm.box = box
 
     n.vm.network "forwarded_port", guest: 8080, host: 8080, auto_correct: true
-    n.vm.network "private_network", ip: "192.168.50.2"
+    n.vm.network "private_network", ip: machine_ips['jenkins_master']
 
     n.vm.provision "install-java", type: "shell", path: "../scripts/install-java"
     n.vm.provision "install-jenkins", type: "shell", path: "../scripts/install-jenkins"
@@ -29,10 +36,11 @@ Vagrant.configure("2") do |config|
 
   # spin up identical slaves
   (0..1).each do |i|
-    config.vm.define "slave-#{i}" do |s|
-      s.vm.box = box
+    machine_name = "jenkins_slave_#{i}"
 
-      s.vm.network "private_network", ip: "192.168.50.#{i + 3}"
+    config.vm.define machine_name do |s|
+      s.vm.box = box
+      s.vm.network "private_network", ip: machine_ips[machine_name]
 
       # give slaves more horsepower
       s.vm.provider "virtualbox" do |v|
@@ -40,10 +48,13 @@ Vagrant.configure("2") do |config|
         v.memory = 2048
       end
 
+      user = 'jenkins-slave'
+
       s.vm.provision "create-user", type: "shell",
-        inline: "sudo /vagrant/scripts/create-user jenkins-slave"
+        inline: "sudo /vagrant/scripts/create-user #{user}"
+
       s.vm.provision "create-key", type: "shell",
-        inline: "sudo -u jenkins-slave ssh-keygen -f /home/jenkins-slave/.ssh/id_rsa -N ''"
+        inline: "sudo -u #{user} ssh-keygen -f /home/${user}/.ssh/id_rsa -N ''"
     end
   end
 end
