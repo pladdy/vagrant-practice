@@ -1,3 +1,5 @@
+## TODO: set up jenkins master to run from /home/jenkins
+
 ## Manage nodes (add slaves)
 Nodes need java installed on them unless user for slave has install rights
 

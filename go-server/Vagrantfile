@@ -36,7 +36,6 @@ Vagrant.configure("2") do |config|
   # example doing an inline set of commands
   config.vm.provision "adduser", type: "shell" do |s|
     s.inline = <<-SHELL
-    # set up user; TODO: puppet :)
     USER_TO_MAKE=pladdy
 
     if id ${USER_TO_MAKE} > /dev/null 2>&1; then
