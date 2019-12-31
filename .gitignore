@@ -5,3 +5,5 @@
 # Ignore any copies of the scripts directory; copies get made when vagrant syncs
 # scripts/ to a vagrant-* directory on `vagrant up`
 vagrant-*/scripts
+
+kubernetes-cluster/join_command
