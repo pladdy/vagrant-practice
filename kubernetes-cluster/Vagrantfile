@@ -1,57 +1,66 @@
 workers = 2
+cluster_network = "192.168.50"
+master_ip = "#{cluster_network}.2"
+master_name = ENV['MASTER_NAME']
+worker_name = ENV['WORKER_NAME']
 master_port = 6443
-master_ip = '192.168.50.2'
 ip_offset = 2
 
 # configure with version "2"
 Vagrant.configure("2") do |config|
-  box = "ubuntu/bionic64"
-
-  config.vm.box = box
-  config.vm.box_check_update = true
-
-  config.vm.synced_folder "../packages/", "/vagrant/packages"
-  config.vm.synced_folder "../scripts/", "/vagrant/scripts"
-
   # avoid 'Innapropriate ioctl for device' messages
   # see vagrant config doc for more info: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
 
-  # set up master node
-  config.vm.define "kubernetes-master" do |km|
-    km.vm.box = box
-    km.vm.provider "virtualbox" do |v|
-      v.cpus = 2
-      v.memory = 2048
-    end
+  # shared configuration/settings
+  config.vm.box = "ubuntu/bionic64"
+  config.vm.box_check_update = true
 
+  config.vm.provider "virtualbox" do |v|
+    v.cpus = 2
+    v.memory = 2048
+  end
+
+  config.vm.synced_folder "../packages/", "/opt/vagrant-packages"
+  config.vm.synced_folder "../scripts/", "/opt/vagrant-scripts"
+
+  # swap must be disabled for kubelet to work: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin
+  config.vm.provision "disable-swapp", type: "shell", inline: "swapoff -a"
+  config.vm.provision "install-docker", type: "shell", path: "../scripts/install-docker"
+  config.vm.provision "install-kubernetes", type: "shell", path: "../scripts/install-kubernetes"
+
+  # set up master node
+  config.vm.define master_name do |km|
     km.vm.network "forwarded_port", guest: master_port, host: master_port, auto_correct: true
     km.vm.network "private_network", ip: master_ip
+    km.vm.hostname = master_name
 
-    km.vm.provision "bootstrap", type: "shell" do |s|
-      s.inline = "apt-get update"
-      # --no-install-recommends
+    km.vm.provision "kubeadm-init", type: "shell", run: "never" do |s|
+      s.inline = <<-SHELL
+      set -eux
+
+      kubeadm init \
+        --apiserver-advertise-address="#{master_ip}" \
+        --apiserver-cert-extra-sans="#{master_ip}" \
+        --node-name #{master_name} \
+        --pod-network-cidr=#{cluster_network}.0/16
+
+      # set up kube config for vagrant user to access cluster
+      mkdir -p /home/vagrant/.kube
+      cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+      chown vagrant:vagrant /home/vagrant/.kube/config
+      SHELL
     end
-
-    km.vm.provision "disable-swapp", type: "shell", inline: "swapoff -a"
   end
 
   # set up worker nodes
   (1..workers).each do |i|
-    config.vm.define "kubernetes-worker-#{i}" do |kw|
-      kw.vm.box = box
-      kw.vm.provider "virtualbox" do |v|
-        v.cpus = 2
-        v.memory = 2048
-      end
+    hostname = "#{worker_name}-#{i}"
+    config.vm.define hostname do |kw|
+      kw.vm.network "private_network", ip: "#{cluster_network}.#{i + ip_offset}"
+      kw.vm.hostname = hostname
 
-      kw.vm.network "private_network", ip: "192.168.50.#{i + ip_offset}"
-
-      kw.vm.provision "bootstrap", type: "shell" do |s|
-        s.inline = "apt-get update"
-      end
-
-      kw.vm.provision "disable-swapp", type: "shell", inline: "swapoff -a"
+      kw.vm.provision "join-cluster", type: "shell", run: "never", inline: "/vagrant/join_command"
     end
   end
 end

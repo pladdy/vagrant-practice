@@ -13,9 +13,10 @@
       - Kind: https://github.com/kubernetes-sigs/kind
   - [DIY Cluster](https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker)
   - [Create single control-plane cluster](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
-  - Examples:
-    - [Kubeadm on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04)
-    - [Kubernetes using Ansible and Vagrant](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
+    - [Kubernetes Ports](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#check-required-ports)
+    - Examples:
+      - [Kubeadm on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04)
+      - [Kubernetes using Ansible and Vagrant](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
 
 ### Vagrant
 
