@@ -1,5 +1,7 @@
 # Learning Kubernetes
 
+Set up a cluster using Vagrant vms.
+
 ## References
 
 ### Kubernetes
@@ -15,6 +17,7 @@
   - [Create single control-plane cluster](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)
     - [Kubernetes Ports](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#check-required-ports)
     - Examples:
+    - [Kubernetes Addons](https://kubernetes.io/docs/concepts/cluster-administration/addons/)
       - [Kubeadm on Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-cluster-using-kubeadm-on-ubuntu-18-04)
       - [Kubernetes using Ansible and Vagrant](https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/)
 
