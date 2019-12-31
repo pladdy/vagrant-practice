@@ -1,9 +1,12 @@
 include .env
 export
 
-.PHONY: join_command kubeadm-init restore snapshot vagrant workers-join-cluster
+.PHONY: dependencies join_command kubeadm-init restore snapshot vagrant workers-join-cluster
 
-all: vagrant kubeadm-init install-pod-network join_command workers-join-cluster
+all: dependencies vagrant kubeadm-init install-pod-network join_command workers-join-cluster
+
+dependencies:
+	vagrant plugin install vagrant-env
 
 install-pod-network:
 	vagrant ssh $(MASTER_NAME) -t -- kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml

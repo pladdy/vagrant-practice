@@ -1,13 +1,15 @@
 workers = 2
 cluster_network = "192.168.50"
 master_ip = "#{cluster_network}.2"
-master_name = ENV['MASTER_NAME']
-worker_name = ENV['WORKER_NAME']
 master_port = 6443
 ip_offset = 2
 
 # configure with version "2"
 Vagrant.configure("2") do |config|
+  config.env.enable
+  master_name = ENV['MASTER_NAME']
+  worker_name = ENV['WORKER_NAME']
+
   # avoid 'Innapropriate ioctl for device' messages
   # see vagrant config doc for more info: https://www.vagrantup.com/docs/vagrantfile/ssh_settings.html
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
