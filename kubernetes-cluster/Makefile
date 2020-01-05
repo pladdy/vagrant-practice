@@ -1,12 +1,24 @@
 include .env
 export
 
-.PHONY: dependencies join_command kubeadm-init restore snapshot vagrant workers-join-cluster
+BRANCH = master
+
+.PHONY: commands dependencies join_command kubeadm-init restore snapshot vagrant workers-join-cluster
+.PHONY: docker-login docker-logout
 
 all: dependencies vagrant kubeadm-init install-pod-network join_command workers-join-cluster
 
+commands:
+	@egrep '^.+:$$' Makefile
+
 dependencies:
 	vagrant plugin install vagrant-env
+
+docker-login:
+	@echo '$(DOCKER_PW)' | docker login -u $(DOCKER_USER) --password-stdin
+
+docker-logout:
+	@docker logout
 
 install-pod-network:
 	vagrant ssh $(MASTER_NAME) -t -- kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 apt-get update
-apt-get install -y default-jre default-jdk
+apt-get install --no-install-recommends -y default-jre default-jdk

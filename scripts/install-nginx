@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-apt-get update -y
-apt-get install -y nginx
+apt-get update
+apt-get install --no-install-recommends -y nginx

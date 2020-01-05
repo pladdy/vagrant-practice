@@ -6,4 +6,6 @@
 # scripts/ to a vagrant-* directory on `vagrant up`
 vagrant-*/scripts
 
+kubernetes-cluster/.env
 kubernetes-cluster/join_command
+kubernetes-cluster/flask-scratch

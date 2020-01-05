@@ -11,4 +11,4 @@ if ! grep -q "${line_to_add}" /etc/apt/sources.list; then
 fi
 
 apt-get update
-apt-get install -y jenkins
+apt-get install --no-install-recommends -y jenkins
