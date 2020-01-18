@@ -14,11 +14,17 @@ commands:
 dependencies:
 	vagrant plugin install vagrant-env
 
+# TODO: share image/container via docker hub? or localy?
+# ref: https://stackoverflow.com/questions/24482822/how-to-share-my-docker-image-without-using-the-docker-hub
+# ref: https://www.linode.com/docs/kubernetes/deploy-container-image-to-kubernetes/#host-your-image-on-docker-hub
 docker-login:
 	@echo '$(DOCKER_PW)' | docker login -u $(DOCKER_USER) --password-stdin
 
 docker-logout:
 	@docker logout
+
+flask-scratch:
+	git clone --single-branch --branch $(BRANCH) https://github.com/pladdy/$@
 
 install-pod-network:
 	vagrant ssh $(MASTER_NAME) -t -- kubectl apply -f https://docs.projectcalico.org/v3.8/manifests/calico.yaml
